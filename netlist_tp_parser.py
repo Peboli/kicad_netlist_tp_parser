@@ -68,7 +68,7 @@ if __name__ == '__main__':
         try:
             tree = Et.parse(_file)
             root = tree.getroot()
-            _tp = [tp.get("ref") for tp in root.find("components").iter("comp") if tp.get("ref").find(prefix) >= 0]
+            _tp = [tp.get("ref") for tp in root.find("components").iter("comp") if tp.get("ref").find(prefix) == 0]
             print(f"Found {len(_tp)} test{'s' if len(_tp) > 1 else ''} point{'s' if len(_tp) > 1 else ''}")
             for net in root.find("nets").iter("net"):
                 found = False
