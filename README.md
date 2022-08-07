@@ -41,7 +41,7 @@ No test point connected to net 'unconnected-(U201-Pad7)'
 Last version: https://github.com/Peboli/kicad_netlist_tp_parser  
 
 ## Authors
-Olivier Cornet aka Peboli on Githib
+Olivier Cornet aka Peboli on Github
 
 ## License
 This script is [MIT licensed](https://github.com/Peboli/kicad_netlist_tp_parser/blob/main/LICENSE)
