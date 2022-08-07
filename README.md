@@ -44,4 +44,4 @@ Last version: https://github.com/Peboli/kicad_netlist_tp_parser
 Olivier Cornet aka Peboli on Githib
 
 ## License
-This script is MIT licensed
+This script is [MIT licensed](https://github.com/Peboli/kicad_netlist_tp_parser/blob/main/LICENSE)
