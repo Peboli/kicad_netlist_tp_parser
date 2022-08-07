@@ -1,0 +1,6 @@
+.idea
+env*
+/**/output
+/**/build
+/**/py[oc]
+/**/__pycache__
