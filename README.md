@@ -6,7 +6,7 @@ This script has been developped following a request by user 'xzf16' on the [Kica
 The purpose of this script is to check if every net have a testpoint connected to it.
 
 ## Environnement
- * Run on Python >=3.5
+ * Run on Python >=3.6
  * No specific module
 
 ## Usage
