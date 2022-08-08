@@ -30,9 +30,11 @@ Processing, please wait ...
 ================= Summary ======================
                   Total TestPoint : 6
                        Total Nets : 8
+             Total connected Nets : 6
+                 Unconnected Nets : 2
     Connected Nets with TestPoint : 5
  Connected Nets without TestPoint : 1
-                 Unconnected Nets : 2
+               TestPoint coverage : 83.3%
 
 ====== Connected Nets without TestPoint ========
 Net-(J1-Pad4)
@@ -46,7 +48,7 @@ Net-(J1-Pad6) : TP5
 ===== More than 1 TestPoint connected Nets =====
 Net-(J1-Pad3) : TP3, TP6
 
-=============== Unconnected nets ===============
+=============== Unconnected Nets ===============
 unconnected-(J3-Pad1)
 unconnected-(J3-Pad2)
 
