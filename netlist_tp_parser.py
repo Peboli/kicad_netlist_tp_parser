@@ -33,7 +33,7 @@ __maintainer__ = "Olivier Cornet"
 
 """
 V1.0.0	07-08-22 - Initial release
-V1.0.1  08-08-22 - Refactoring and added summry informations
+V1.0.1  08-08-22 - Refactoring and added summary informations
 """
 
 import sys
@@ -80,17 +80,21 @@ if __name__ == '__main__':
             tp = [tp.get("ref") for tp in root.find("components").iter("comp") if tp.get("ref").startswith(prefix)]
 
             unconnected = [net for net in nets if len(net[1]) == 1]
+            connected = [net for net in nets if len(net[1]) > 1]
             connected_wo_tp = [net for net in nets if (not sum(1 for s in net[1] if prefix in s) and len(net[1]) > 1)]
             connected_one_tp = [net for net in nets if sum(1 for s in net[1] if prefix in s) == 1]
             connected_more_tp = [net for net in nets if sum(1 for s in net[1] if prefix in s) > 1]
-
+            connected_tp = [net for net in nets if sum(1 for s in net[1] if prefix in s) >= 1]
+            tp_coverage = len(connected_tp) / len(connected)
             # SUMMARY display
             print("\n================= Summary ======================")
             print(f"{'Total TestPoint :': >35} {len(tp)}")
             print(f"{'Total Nets :': >35} {len(nets)}")
-            print(f"{'Connected Nets with TestPoint :': >35} {len(connected_one_tp) + len(connected_more_tp)}")
-            print(f"{'Connected Nets without TestPoint :': >35} {len(connected_wo_tp)}")
+            print(f"{'Total connected Nets :': >35} {len(connected)}")
             print(f"{'Unconnected Nets :': >35} {len(unconnected)}")
+            print(f"{'Connected Nets with TestPoint :': >35} {len(connected_tp)}")
+            print(f"{'Connected Nets without TestPoint :': >35} {len(connected_wo_tp)}")
+            print(f"{'TestPoint coverage :': >35} {tp_coverage:.1%}")
             print("\n====== Connected Nets without TestPoint ========")
             for n in connected_wo_tp:
                 print(n[0])
@@ -100,7 +104,7 @@ if __name__ == '__main__':
             print("\n===== More than 1 TestPoint connected Nets =====")
             for n in connected_more_tp:
                 print(f"{n[0]} : {', '.join([tp for tp in n[1] if prefix in tp])}")
-            print("\n=============== Unconnected nets ===============")
+            print("\n=============== Unconnected Nets ===============")
             for n in unconnected:
                 print(n[0])
 
