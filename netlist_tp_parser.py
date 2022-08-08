@@ -40,7 +40,6 @@ import sys
 import argparse
 from pathlib import Path
 import xml.etree.ElementTree as Et
-import xml
 
 
 if __name__ == '__main__':
@@ -70,7 +69,7 @@ if __name__ == '__main__':
 
         try:
             tree = Et.parse(_file)
-        except xml.etree.ElementTree.ParseError:
+        except Et.ParseError:
             print("File does not seem to be a valid XML file !")
             sys.exit(99)
         finally:
