@@ -2,7 +2,7 @@
 
 __author__ = "Olivier Cornet"
 __appname__ = "Kicad Netlist Parser for checking connection between net and test point"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __maintainer__ = "Olivier Cornet"
 
 # MIT License
@@ -33,6 +33,7 @@ __maintainer__ = "Olivier Cornet"
 
 """
 V1.0.0	07-08-22 - Initial release
+V1.0.1  08-08-22 - Refactoring and added summry informations
 """
 
 import sys
@@ -65,21 +66,43 @@ if __name__ == '__main__':
 
     def parse_xml_netlist(_file):
         print("Processing, please wait ...")
+        tree = None
+
         try:
             tree = Et.parse(_file)
-            root = tree.getroot()
-            _tp = [tp.get("ref") for tp in root.find("components").iter("comp") if tp.get("ref").find(prefix) == 0]
-            print(f"Found {len(_tp)} test{'s' if len(_tp) > 1 else ''} point{'s' if len(_tp) > 1 else ''}")
-            for net in root.find("nets").iter("net"):
-                found = False
-                refs = [ref.get('ref') for ref in net]
-                for _tp_ref in _tp:
-                    if _tp_ref in refs:
-                        found = True
-                if not found:
-                    print(f"No test point connected to net '{net.get('name')}'")
         except xml.etree.ElementTree.ParseError:
             print("File does not seem to be a valid XML file !")
+            sys.exit(99)
+        finally:
+            root = tree.getroot()
+            nets = [[net.get('name'), [node.get('ref') for node in net.iter('node')]] for net in
+                    root.find('nets').iter('net')]
+            tp = [tp.get("ref") for tp in root.find("components").iter("comp") if tp.get("ref").startswith(prefix)]
+
+            unconnected = [net for net in nets if len(net[1]) == 1]
+            connected_wo_tp = [net for net in nets if (not sum(1 for s in net[1] if prefix in s) and len(net[1]) > 1)]
+            connected_one_tp = [net for net in nets if sum(1 for s in net[1] if prefix in s) == 1]
+            connected_more_tp = [net for net in nets if sum(1 for s in net[1] if prefix in s) > 1]
+
+            # SUMMARY display
+            print("\n================= Summary ======================")
+            print(f"{'Total TestPoint :': >35} {len(tp)}")
+            print(f"{'Total Nets :': >35} {len(nets)}")
+            print(f"{'Connected Nets with TestPoint :': >35} {len(connected_one_tp) + len(connected_more_tp)}")
+            print(f"{'Connected Nets without TestPoint :': >35} {len(connected_wo_tp)}")
+            print(f"{'Unconnected Nets :': >35} {len(unconnected)}")
+            print("\n====== Connected Nets without TestPoint ========")
+            for n in connected_wo_tp:
+                print(n[0])
+            print("\n========= 1 TestPoint connected Nets ===========")
+            for n in connected_one_tp:
+                print(f"{n[0]} : {', '.join([tp for tp in n[1] if prefix in tp])}")
+            print("\n===== More than 1 TestPoint connected Nets =====")
+            for n in connected_more_tp:
+                print(f"{n[0]} : {', '.join([tp for tp in n[1] if prefix in tp])}")
+            print("\n=============== Unconnected nets ===============")
+            for n in unconnected:
+                print(n[0])
 
 
     if Path(file).suffix == ".xml":

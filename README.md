@@ -23,24 +23,42 @@ If not specified, the default prefix is `TP` like Test Point.
 ## Example
 
 ```shell
-> python netlist_tp_parser.py Example.xml
-
+> python3 netlist_tp_parser.py part_net_relation.xml
 Component reference prefix to check: TP
 Processing, please wait ...
-Found 75 tests points
-No test point connected to net 'Net-(R406-Pad1)'
-No test point connected to net 'Net-(R407-Pad1)'
-No test point connected to net 'unconnected-(J401-Pad4)'
-No test point connected to net 'unconnected-(U201-Pad3)'
-No test point connected to net 'unconnected-(U201-Pad7)'
+
+================= Summary ======================
+                  Total TestPoint : 6
+                       Total Nets : 8
+    Connected Nets with TestPoint : 5
+ Connected Nets without TestPoint : 1
+                 Unconnected Nets : 2
+
+====== Connected Nets without TestPoint ========
+Net-(J1-Pad4)
+
+========= 1 TestPoint connected Nets ===========
+Net-(J1-Pad1) : TP1
+Net-(J1-Pad2) : TP2
+Net-(J1-Pad5) : TP4
+Net-(J1-Pad6) : TP5
+
+===== More than 1 TestPoint connected Nets =====
+Net-(J1-Pad3) : TP3, TP6
+
+=============== Unconnected nets ===============
+unconnected-(J3-Pad1)
+unconnected-(J3-Pad2)
+
+
 ```
 
 ## Versions
 
-1.0.0 created in : August 2022<br>
+1.0.1 created in August 8, 2022<br>
 Last version: https://github.com/Peboli/kicad_netlist_tp_parser  
 
-## Authors
+## Author
 Olivier Cornet aka Peboli on Github
 
 ## License
