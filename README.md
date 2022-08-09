@@ -76,6 +76,12 @@ In the "Bill of material" window, click on `testpoint_connectivity` in the BOM g
 A printout with the summary results will be displayed on right panel of the widow<br>
 At the same time, the summary results will be written in a text file (`[project_name].txt`) created in your project folder.
 
+Note that the script find the testpoints in the netlist by identifying a pattern at the beginning of their reference.<br>
+If for any reason you need to change the testpoint reference prefix, you can edit the script `testpoint_connectivity` and change the content of the prefix variable.<br>
+
+`prefix = "TP"`
+<br><br>
+
 ![](img/testpoint_connectivity.png)
 
 ## - Versions
