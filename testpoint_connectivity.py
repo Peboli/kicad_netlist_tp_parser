@@ -4,7 +4,7 @@ from __future__ import print_function
 
 __author__ = "Olivier Cornet"
 __appname__ = "Kicad Plugin for checking connection between nets and testpoints"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __maintainer__ = "Olivier Cornet"
 
 # MIT License
@@ -34,6 +34,7 @@ __maintainer__ = "Olivier Cornet"
 # File : testpoint_connectivity.py
 
 # V1.0.0	09-08-22 - Initial release
+# V1.0.1    21-02-25 - Added "None" printout when no element in the specific list
 
 
 """
@@ -98,19 +99,30 @@ finally:
     prt2file(f"Connected Nets without TestPoint : {len(connected_wo_tp)}")
     prt2file(f"TestPoint coverage : {tp_coverage:.1%}")
     prt2file("\n====== Connected Nets without TestPoint ========")
-    for n in connected_wo_tp:
-        prt2file(n[0])
+    if connected_wo_tp:
+        for n in connected_wo_tp:
+            prt2file(n[0])
+    else:
+        prt2file("None")
     prt2file("\n========= 1 TestPoint connected Nets ===========")
-    for n in connected_one_tp:
-        prt2file(
-            f"{n[0]} : {', '.join([tp for tp in n[1] if prefix in tp])}")
+    if connected_one_tp:
+        for n in connected_one_tp:
+            prt2file(f"{n[0]} : {', '.join([tp for tp in n[1] if prefix in tp])}")
+    else:
+        prt2file("None")
     prt2file("\n===== More than 1 TestPoint connected Nets =====")
-    for n in connected_more_tp:
-        prt2file(
-            f"{n[0]} : {', '.join([tp for tp in n[1] if prefix in tp])}")
+    if connected_more_tp:
+        for n in connected_more_tp:
+            prt2file(
+                f"{n[0]} : {', '.join([tp for tp in n[1] if prefix in tp])}")
+    else:
+        prt2file("None")
     prt2file("\n=============== Unconnected Nets ===============")
-    for n in unconnected:
-        prt2file(n[0])
+    if unconnected:
+        for n in unconnected:
+            prt2file(n[0])
+    else:
+        prt2file("None")
 
 if txt_file:
     txt_file.close()

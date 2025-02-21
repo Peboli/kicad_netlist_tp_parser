@@ -2,7 +2,7 @@
 
 __author__ = "Olivier Cornet"
 __appname__ = "Kicad Netlist Parser for checking connection between net and test point"
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 __maintainer__ = "Olivier Cornet"
 
 # MIT License
@@ -34,6 +34,7 @@ __maintainer__ = "Olivier Cornet"
 """
 V1.0.0	07-08-22 - Initial release
 V1.0.1  08-08-22 - Refactoring and added summary informations
+V1.0.2  21-02-25 - Added "None" printout when no element in the specific list
 """
 
 import sys
@@ -95,17 +96,29 @@ if __name__ == '__main__':
             print(f"{'Connected Nets without TestPoint :': >35} {len(connected_wo_tp)}")
             print(f"{'TestPoint coverage :': >35} {tp_coverage:.1%}")
             print("\n====== Connected Nets without TestPoint ========")
-            for n in connected_wo_tp:
-                print(n[0])
+            if connected_wo_tp:
+                for n in connected_wo_tp:
+                    print(n[0])
+            else:
+                print("None")
             print("\n========= 1 TestPoint connected Nets ===========")
-            for n in connected_one_tp:
-                print(f"{n[0]} : {', '.join([tp for tp in n[1] if prefix in tp])}")
+            if connected_one_tp:
+                for n in connected_one_tp:
+                    print(f"{n[0]} : {', '.join([tp for tp in n[1] if prefix in tp])}")
+            else:
+                print("None")
             print("\n===== More than 1 TestPoint connected Nets =====")
-            for n in connected_more_tp:
-                print(f"{n[0]} : {', '.join([tp for tp in n[1] if prefix in tp])}")
+            if connected_more_tp:
+                for n in connected_more_tp:
+                    print(f"{n[0]} : {', '.join([tp for tp in n[1] if prefix in tp])}")
+            else:
+                print("None")
             print("\n=============== Unconnected Nets ===============")
-            for n in unconnected:
-                print(n[0])
+            if unconnected:
+                for n in unconnected:
+                    print(n[0])
+            else:
+                print("None")
 
 
     if Path(file).suffix == ".xml":
