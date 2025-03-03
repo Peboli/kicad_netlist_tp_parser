@@ -11,7 +11,7 @@ Two versions exist :<br>
 
 ## - Environnement
  * Python >=3.6 for standalone version
- * Kicad 6.x for plugin version
+ * Kicad for plugin version, compatible with ![](https://img.shields.io/badge/V6-%20KiCad-blue) ![](https://img.shields.io/badge/V7-%20KiCad-green) ![](https://img.shields.io/badge/V8-%20KiCad-orange) ![](https://img.shields.io/badge/V9-%20KiCad-purple)
  * No specific Python module
 
 ## - Stand alone version
@@ -65,9 +65,13 @@ unconnected-(J3-Pad2)
 ### -- Installation
 
 To install the plugin script, copy the file `testpoint_connectivity.py` in the Kicad Plugin folder located
-at the following path `C:\Users\[Username]\Documents\KiCad\6.0\plugins`.<br>
-In the Schematics editor, open the "Bill of material" window by either going to "Tools" -> "Generate Bill of Materials" 
-or by clicking the "BOM" icon on the tools bar, then press the "+" button at the bottom of the screen and choose the plugin file you have just copied.<br>
+at the following path `C:\Users\[Username]\Documents\KiCad\X.0\plugins` (X correspond to the KiCad major version number).<br>
+* <ins>For KiCad V6 and V7</ins><br>
+In the Schematics editor, open the "Bill of material" window by either going to "Tools" -> "Generate Bill of Materials" or by clicking the "BOM" icon on the tools bar<br>
+* <ins>For KiCad V8 and V9</ins><br>
+In the Schematics editor, open the "Bill of material" window by going to "Tools" -> "Generate Legacy Bill of Materials"<br>
+
+Then press the "+" button at the bottom of the screen and choose the plugin file you have just copied.<br>
 When asked for the nickname, go with the default, the "Bill of material" window
 
 ### -- Usage
