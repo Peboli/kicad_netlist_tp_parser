@@ -2,7 +2,7 @@
 
 __author__ = "Olivier Cornet"
 __appname__ = "Kicad Netlist Parser for checking connection between net and test point"
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 __maintainer__ = "Olivier Cornet"
 
 # MIT License
@@ -35,6 +35,7 @@ __maintainer__ = "Olivier Cornet"
 V1.0.0	07-08-22 - Initial release
 V1.0.1  08-08-22 - Refactoring and added summary informations
 V1.0.2  21-02-25 - Added "None" printout when no element in the specific list
+V1.0.3  03-03-25 - Catch the case when schematic is empty
 """
 
 import sys
@@ -75,51 +76,53 @@ if __name__ == '__main__':
             sys.exit(99)
         finally:
             root = tree.getroot()
-            nets = [[net.get('name'), [node.get('ref') for node in net.iter('node')]] for net in
+            nets = [[net.get('name'), [node.get('ref') for node in net.iter('node')]] for net in 
                     root.find('nets').iter('net')]
-            tp = [tp.get("ref") for tp in root.find("components").iter("comp") if tp.get("ref").startswith(prefix)]
+            if nets:
+                tp = [tp.get("ref") for tp in root.find("components").iter("comp") if tp.get("ref").startswith(prefix)]
 
-            unconnected = [net for net in nets if len(net[1]) == 1]
-            connected = [net for net in nets if len(net[1]) > 1]
-            connected_wo_tp = [net for net in nets if (not sum(1 for s in net[1] if prefix in s) and len(net[1]) > 1)]
-            connected_one_tp = [net for net in nets if sum(1 for s in net[1] if prefix in s) == 1]
-            connected_more_tp = [net for net in nets if sum(1 for s in net[1] if prefix in s) > 1]
-            connected_tp = [net for net in nets if sum(1 for s in net[1] if prefix in s) >= 1]
-            tp_coverage = len(connected_tp) / len(connected)
-            # SUMMARY display
-            print("\n================= Summary ======================")
-            print(f"{'Total TestPoint :': >35} {len(tp)}")
-            print(f"{'Total Nets :': >35} {len(nets)}")
-            print(f"{'Total connected Nets :': >35} {len(connected)}")
-            print(f"{'Unconnected Nets :': >35} {len(unconnected)}")
-            print(f"{'Connected Nets with TestPoint :': >35} {len(connected_tp)}")
-            print(f"{'Connected Nets without TestPoint :': >35} {len(connected_wo_tp)}")
-            print(f"{'TestPoint coverage :': >35} {tp_coverage:.1%}")
-            print("\n====== Connected Nets without TestPoint ========")
-            if connected_wo_tp:
-                for n in connected_wo_tp:
-                    print(n[0])
+                unconnected = [net for net in nets if len(net[1]) == 1]
+                connected = [net for net in nets if len(net[1]) > 1]
+                connected_wo_tp = [net for net in nets if (not sum(1 for s in net[1] if prefix in s) and len(net[1]) > 1)]
+                connected_one_tp = [net for net in nets if sum(1 for s in net[1] if prefix in s) == 1]
+                connected_more_tp = [net for net in nets if sum(1 for s in net[1] if prefix in s) > 1]
+                connected_tp = [net for net in nets if sum(1 for s in net[1] if prefix in s) >= 1]
+                tp_coverage = len(connected_tp) / len(connected)
+                # SUMMARY display
+                print("\n================= Summary ======================")
+                print(f"{'Total TestPoint :': >35} {len(tp)}")
+                print(f"{'Total Nets :': >35} {len(nets)}")
+                print(f"{'Total connected Nets :': >35} {len(connected)}")
+                print(f"{'Unconnected Nets :': >35} {len(unconnected)}")
+                print(f"{'Connected Nets with TestPoint :': >35} {len(connected_tp)}")
+                print(f"{'Connected Nets without TestPoint :': >35} {len(connected_wo_tp)}")
+                print(f"{'TestPoint coverage :': >35} {tp_coverage:.1%}")
+                print("\n====== Connected Nets without TestPoint ========")
+                if connected_wo_tp:
+                    for n in connected_wo_tp:
+                        print(n[0])
+                else:
+                    print("None")
+                print("\n========= 1 TestPoint connected Nets ===========")
+                if connected_one_tp:
+                    for n in connected_one_tp:
+                        print(f"{n[0]} : {', '.join([tp for tp in n[1] if prefix in tp])}")
+                else:
+                    print("None")
+                print("\n===== More than 1 TestPoint connected Nets =====")
+                if connected_more_tp:
+                    for n in connected_more_tp:
+                        print(f"{n[0]} : {', '.join([tp for tp in n[1] if prefix in tp])}")
+                else:
+                    print("None")
+                print("\n=============== Unconnected Nets ===============")
+                if unconnected:
+                    for n in unconnected:
+                        print(n[0])
+                else:
+                    print("None")
             else:
-                print("None")
-            print("\n========= 1 TestPoint connected Nets ===========")
-            if connected_one_tp:
-                for n in connected_one_tp:
-                    print(f"{n[0]} : {', '.join([tp for tp in n[1] if prefix in tp])}")
-            else:
-                print("None")
-            print("\n===== More than 1 TestPoint connected Nets =====")
-            if connected_more_tp:
-                for n in connected_more_tp:
-                    print(f"{n[0]} : {', '.join([tp for tp in n[1] if prefix in tp])}")
-            else:
-                print("None")
-            print("\n=============== Unconnected Nets ===============")
-            if unconnected:
-                for n in unconnected:
-                    print(n[0])
-            else:
-                print("None")
-
+                print("No Nets in this schematics, nothing to do !")
 
     if Path(file).suffix == ".xml":
         parse_xml_netlist(file)

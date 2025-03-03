@@ -4,7 +4,7 @@ from __future__ import print_function
 
 __author__ = "Olivier Cornet"
 __appname__ = "Kicad Plugin for checking connection between nets and testpoints"
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 __maintainer__ = "Olivier Cornet"
 
 # MIT License
@@ -35,6 +35,7 @@ __maintainer__ = "Olivier Cornet"
 
 # V1.0.0	09-08-22 - Initial release
 # V1.0.1    21-02-25 - Added "None" printout when no element in the specific list
+# V1.0.2    03-03-25 - Catch the case when schematic is empty
 
 
 """
@@ -79,50 +80,53 @@ except Et.ParseError:
 finally:
     root = tree.getroot()
     nets = [[net.get('name'), [node.get('ref') for node in net.iter('node')]] for net in root.find('nets').iter('net')]
-    tp = [tp.get("ref") for tp in root.find("components").iter("comp") if tp.get("ref").startswith(prefix)]
+    if nets:
+        tp = [tp.get("ref") for tp in root.find("components").iter("comp") if tp.get("ref").startswith(prefix)]
 
-    unconnected = [net for net in nets if len(net[1]) == 1]
-    connected = [net for net in nets if len(net[1]) > 1]
-    connected_wo_tp = [net for net in nets if (not sum(1 for s in net[1] if prefix in s) and len(net[1]) > 1)]
-    connected_one_tp = [net for net in nets if sum(1 for s in net[1] if prefix in s) == 1]
-    connected_more_tp = [net for net in nets if sum(1 for s in net[1] if prefix in s) > 1]
-    connected_tp = [net for net in nets if sum(1 for s in net[1] if prefix in s) >= 1]
-    tp_coverage = len(connected_tp) / len(connected)
+        unconnected = [net for net in nets if len(net[1]) == 1]
+        connected = [net for net in nets if len(net[1]) > 1]
+        connected_wo_tp = [net for net in nets if (not sum(1 for s in net[1] if prefix in s) and len(net[1]) > 1)]
+        connected_one_tp = [net for net in nets if sum(1 for s in net[1] if prefix in s) == 1]
+        connected_more_tp = [net for net in nets if sum(1 for s in net[1] if prefix in s) > 1]
+        connected_tp = [net for net in nets if sum(1 for s in net[1] if prefix in s) >= 1]
+        tp_coverage = len(connected_tp) / len(connected)
 
-    # SUMMARY display
-    prt2file("\n================= Summary ======================")
-    prt2file(f"Total TestPoint : {len(tp)}")
-    prt2file(f"Total Nets : {len(nets)}")
-    prt2file(f"Total connected Nets : {len(connected)}")
-    prt2file(f"Unconnected Nets : {len(unconnected)}")
-    prt2file(f"Connected Nets with TestPoint : {len(connected_tp)}")
-    prt2file(f"Connected Nets without TestPoint : {len(connected_wo_tp)}")
-    prt2file(f"TestPoint coverage : {tp_coverage:.1%}")
-    prt2file("\n====== Connected Nets without TestPoint ========")
-    if connected_wo_tp:
-        for n in connected_wo_tp:
-            prt2file(n[0])
+        # SUMMARY display
+        prt2file("\n================= Summary ======================")
+        prt2file(f"Total TestPoint : {len(tp)}")
+        prt2file(f"Total Nets : {len(nets)}")
+        prt2file(f"Total connected Nets : {len(connected)}")
+        prt2file(f"Unconnected Nets : {len(unconnected)}")
+        prt2file(f"Connected Nets with TestPoint : {len(connected_tp)}")
+        prt2file(f"Connected Nets without TestPoint : {len(connected_wo_tp)}")
+        prt2file(f"TestPoint coverage : {tp_coverage:.1%}")
+        prt2file("\n====== Connected Nets without TestPoint ========")
+        if connected_wo_tp:
+            for n in connected_wo_tp:
+                prt2file(n[0])
+        else:
+            prt2file("None")
+        prt2file("\n========= 1 TestPoint connected Nets ===========")
+        if connected_one_tp:
+            for n in connected_one_tp:
+                prt2file(f"{n[0]} : {', '.join([tp for tp in n[1] if prefix in tp])}")
+        else:
+            prt2file("None")
+        prt2file("\n===== More than 1 TestPoint connected Nets =====")
+        if connected_more_tp:
+            for n in connected_more_tp:
+                prt2file(
+                    f"{n[0]} : {', '.join([tp for tp in n[1] if prefix in tp])}")
+        else:
+            prt2file("None")
+        prt2file("\n=============== Unconnected Nets ===============")
+        if unconnected:
+            for n in unconnected:
+                prt2file(n[0])
+        else:
+            prt2file("None")
     else:
-        prt2file("None")
-    prt2file("\n========= 1 TestPoint connected Nets ===========")
-    if connected_one_tp:
-        for n in connected_one_tp:
-            prt2file(f"{n[0]} : {', '.join([tp for tp in n[1] if prefix in tp])}")
-    else:
-        prt2file("None")
-    prt2file("\n===== More than 1 TestPoint connected Nets =====")
-    if connected_more_tp:
-        for n in connected_more_tp:
-            prt2file(
-                f"{n[0]} : {', '.join([tp for tp in n[1] if prefix in tp])}")
-    else:
-        prt2file("None")
-    prt2file("\n=============== Unconnected Nets ===============")
-    if unconnected:
-        for n in unconnected:
-            prt2file(n[0])
-    else:
-        prt2file("None")
+        prt2file("No Nets in this schematics, nothing to do !")
 
 if txt_file:
     txt_file.close()
